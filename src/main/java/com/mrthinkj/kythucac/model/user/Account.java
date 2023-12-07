@@ -1,0 +1,138 @@
+package com.mrthinkj.kythucac.model.user;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mrthinkj.kythucac.annotation.ValidPassword;
+import com.mrthinkj.kythucac.model.book.Book;
+import com.mrthinkj.kythucac.model.book.BookRead;
+import com.mrthinkj.kythucac.model.book.Chapter;
+
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.util.List;
+
+@Entity
+@Table(name = "account")
+public class Account {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Column(name = "username")
+    @NotNull(message = "Không được để trống thông tin")
+    @NotEmpty(message = "Không được để trống thông tin")
+    @Size(min = 6, message = "Tên đăng nhập ít nhất 6 kí tự")
+    @Size(max = 10, message = "Tên đăng nhập nhiều nhất 10 kí tự")
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Tên đăng nhập không được chứa kí tự đặc biệt hoặc khoảng trắng")
+    private String username;
+    @Column(name = "password")
+    @NotNull(message = "Không được để trống thông tin")
+    @NotEmpty(message = "Không được để trống thông tin")
+    private String password;
+    @Column(name = "email")
+    private String email;
+    @Column(name = "currency")
+    private int currency;
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private User user;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "account_roles",
+            joinColumns = @JoinColumn(
+                    name = "account_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    private List<Role> roleList;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "account")
+    @JsonIgnore
+    private List<Book> bookList;
+
+    private Boolean enabled;
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public List<Book> getBookList() {
+        return bookList;
+    }
+
+    public void setBookList(List<Book> bookList) {
+        this.bookList = bookList;
+    }
+
+    public Boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(int currency) {
+        this.currency = currency;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Role> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<Role> roleList) {
+        this.roleList = roleList;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", currency=" + currency +
+                ", user=" + user +
+                '}';
+    }
+}
